@@ -19,6 +19,8 @@ package org.keycloak.social.discord;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,39 @@ public class DiscordIdentityProviderConfig extends OAuth2IdentityProviderConfig 
             return Arrays.stream(guilds.split(",")).map(x -> x.trim()).collect(Collectors.toSet());
         }
         return Collections.emptySet();
+    }
+
+    public String getMappedRoles() {
+        return getConfig().get("mappedRoles");
+    }
+
+    public void setMappedRoles(String mappedRoles) {
+        getConfig().put("mappedRoles", mappedRoles);
+    }
+
+    public boolean hasMappedRoles() {
+        String mappedRoles = getConfig().get("mappedRoles");
+        return mappedRoles != null && !mappedRoles.trim().isEmpty();
+    }
+
+    public Map<String, HashMap<String, String>> getMappedRolesAsMap() {
+        if (hasMappedRoles()) {
+            String mappedRoles = getMappedRoles();
+            Map<String, HashMap<String, String>> parsedRoles = new HashMap<>();
+            for (String rawRole : mappedRoles.split(",")) {
+                rawRole = rawRole.trim();
+                String fragments[] = rawRole.split(":");
+                if (fragments.length != 3) {
+                    continue;
+                }
+                if (!parsedRoles.containsKey(fragments[0])) {
+                    parsedRoles.put(fragments[0], new HashMap<>());
+                }
+                parsedRoles.get(fragments[0]).put(fragments[1], fragments[2]);
+            }
+            return parsedRoles;
+        }
+        return Collections.emptyMap();
     }
 
     public void setPrompt(String prompt) {

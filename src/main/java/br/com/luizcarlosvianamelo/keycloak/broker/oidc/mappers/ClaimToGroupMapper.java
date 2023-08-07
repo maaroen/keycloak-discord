@@ -1,9 +1,12 @@
 package br.com.luizcarlosvianamelo.keycloak.broker.oidc.mappers;
 
 import org.jboss.logging.Logger;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.keycloak.broker.oidc.KeycloakOIDCIdentityProviderFactory;
 import org.keycloak.broker.oidc.OIDCIdentityProviderFactory;
+import org.keycloak.broker.oidc.OIDCIdentityProvider;
 import org.keycloak.broker.oidc.mappers.AbstractClaimMapper;
+import org.keycloak.broker.oidc.mappers.AbstractJsonUserAttributeMapper;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.*;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -118,6 +121,11 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
     public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
 
         this.syncGroups(realm, user, mapperModel, context);
+    }
+
+    public static Object getClaimValue(BrokeredIdentityContext context, String claim) {
+        JsonNode profileJsonNode = (JsonNode) context.getContextData().get(OIDCIdentityProvider.USER_INFO);
+        return AbstractJsonUserAttributeMapper.getJsonValue(profileJsonNode, claim);
     }
 
     private void syncGroups(RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {

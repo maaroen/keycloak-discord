@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2018 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
@@ -17,11 +18,14 @@
 
 package org.keycloak.social.discord;
 
-import org.keycloak.broker.oidc.OAuth2IdentityProviderConfig;
 import org.keycloak.broker.provider.AbstractIdentityProviderFactory;
 import org.keycloak.broker.social.SocialIdentityProviderFactory;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.provider.ProviderConfigurationBuilder;
+
+import java.util.List;
 
 /**
  * @author <a href="mailto:wadahiro@gmail.com">Hiroyuki Wada</a>
@@ -44,6 +48,25 @@ public class DiscordIdentityProviderFactory extends AbstractIdentityProviderFact
     @Override
     public DiscordIdentityProviderConfig createConfig() {
         return new DiscordIdentityProviderConfig();
+    }
+
+    @Override
+    public List<ProviderConfigProperty> getConfigProperties() {
+        return ProviderConfigurationBuilder.create()
+                .property()
+                .name("allowedGuilds")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .label("Guild Id(s) to allow federation")
+                .helpText("If you want to allow federation for specific guild, enter the guild id. Please use a comma as a separator for multiple guilds.")
+                .add()
+//                .create()
+                .property()
+                .name("mappedRoles")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .label("Discord Roles mapping")
+                .helpText("Map Discord roles to Keycloak groups. The expected format is '<guild_id>:<role_id>:<group_name>'. Use a comma as a separator for multiple mappings.")
+                .add()
+                .build();
     }
 
     @Override

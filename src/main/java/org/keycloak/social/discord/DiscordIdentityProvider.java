@@ -124,7 +124,7 @@ public class DiscordIdentityProvider extends AbstractOAuth2IdentityProvider<Disc
                         }
                     }
                 } catch (Exception e) {
-                    throw new IdentityBrokerException("Could not obtain guild member data from discord.", e);
+                    log.debug("Could not obtain guild member data from discord.");
                 }
             }
         }

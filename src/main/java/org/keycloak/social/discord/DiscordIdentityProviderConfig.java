@@ -43,6 +43,14 @@ public class DiscordIdentityProviderConfig extends OAuth2IdentityProviderConfig 
         return getConfig().get("allowedGuilds");
     }
 
+    public boolean setPromptNone() {
+        if(getConfig().containsKey("promptNone")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void setAllowedGuilds(String allowedGuilds) {
         getConfig().put("allowedGuilds", allowedGuilds);
     }

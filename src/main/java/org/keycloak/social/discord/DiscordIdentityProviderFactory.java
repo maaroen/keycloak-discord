@@ -59,12 +59,17 @@ public class DiscordIdentityProviderFactory extends AbstractIdentityProviderFact
                 .label("Guild Id(s) to allow federation")
                 .helpText("If you want to allow federation for specific guild, enter the guild id. Please use a comma as a separator for multiple guilds.")
                 .add()
-//                .create()
                 .property()
                 .name("mappedRoles")
                 .type(ProviderConfigProperty.STRING_TYPE)
                 .label("Discord Roles mapping")
                 .helpText("Map Discord roles to Keycloak groups. The expected format is '<guild_id>:<role_id>:<group_name>'. Use a comma as a separator for multiple mappings.")
+                .add()
+                .property()
+                .name("promptNone")
+                .type("boolean")
+                .label("Skip Discord prompt")
+                .helpText("Should Discord skip the prompt for users that have already granted access to our application?")
                 .add()
                 .build();
     }

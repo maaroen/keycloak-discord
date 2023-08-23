@@ -61,6 +61,9 @@ public class DiscordIdentityProvider extends AbstractOAuth2IdentityProvider<Disc
         config.setAuthorizationUrl(AUTH_URL);
         config.setTokenUrl(TOKEN_URL);
         config.setUserInfoUrl(PROFILE_URL);
+        if (config.setPromptNone()) {
+            config.setPrompt("none");
+        }
     }
 
     @Override

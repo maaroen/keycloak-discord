@@ -43,6 +43,8 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
     private static final String CONTAINS_TEXT = "contains_text";
 
     private static final String CREATE_GROUPS = "create_groups";
+    
+    private static final String CLEAR_ROLES_IF_NONE = "clearRolesIfNone";
 
     static {
         ProviderConfigProperty property;
@@ -70,6 +72,14 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
         property.setLabel("Create groups if not exists");
         property.setHelpText("Indicates if missing groups must be created in the realms. Otherwise, they will " +
                 "be ignored.");
+
+        property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
+        CONFIG_PROPERTIES.add(property);
+        
+        property = new ProviderConfigProperty();
+        property.setName(CLEAR_ROLES_IF_NONE);
+        property.setLabel("Clear discord roles if no roles found");
+        property.setHelpText("Should Discord roles be cleared out if no roles can be retrieved for example when a user is no longer part of the discord server");
 
         property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
         CONFIG_PROPERTIES.add(property);
@@ -123,9 +133,17 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
         this.syncGroups(realm, user, mapperModel, context);
     }
 
-    public static Object getClaimValue(BrokeredIdentityContext context, String claim) {
+    public static List<String> getClaimValue(BrokeredIdentityContext context, String claim) {
         JsonNode profileJsonNode = (JsonNode) context.getContextData().get(OIDCIdentityProvider.USER_INFO);
-        return AbstractJsonUserAttributeMapper.getJsonValue(profileJsonNode, claim);
+        var roles = AbstractJsonUserAttributeMapper.getJsonValue(profileJsonNode, claim);
+        if(roles == null)
+            return new ArrayList<>();
+        // convert to string list if not list
+        List<String> newList = new ArrayList<>();
+        if (!List.class.isAssignableFrom(roles.getClass())) {
+            newList.add(roles.toString());
+        }
+        return newList;
     }
 
     private void syncGroups(RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
@@ -140,9 +158,10 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
             return;
 
         // get new groups
-        Object newGroupsObj = getClaimValue(context, groupClaimName);
+        List<String> newGroupsList = getClaimValue(context, groupClaimName);
+        boolean clearRolesIfNone = Boolean.parseBoolean(mapperModel.getConfig().get(CLEAR_ROLES_IF_NONE));
         // don't modify groups membership if the claim was not found
-        if (newGroupsObj == null) {
+        if (newGroupsList.isEmpty()  && !clearRolesIfNone) {
             logger.debugf("Realm [%s], IdP [%s]: no group claim (claim name: [%s]) for user [%s], ignoring...",
                     realm.getName(),
                     mapperModel.getIdentityProviderAlias(),
@@ -156,12 +175,6 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
                 mapperModel.getIdentityProviderAlias(),
                 user.getUsername());
 
-        // convert to string list if not list
-        if (!List.class.isAssignableFrom(newGroupsObj.getClass())) {
-            List<String> newList = new ArrayList<>();
-            newList.add(newGroupsObj.toString());
-            newGroupsObj = newList;
-        }
 
         // get user current groups
         Set<GroupModel> currentGroups = user.getGroupsStream()
@@ -180,7 +193,7 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
 
         // filter the groups by its name
         @SuppressWarnings("unchecked")
-        Set<String> newGroupsNames = ((List<String>) newGroupsObj)
+        Set<String> newGroupsNames = newGroupsList
                 .stream()
                 .filter(t -> isEmpty(containsText) || t.contains(containsText))
                 .collect(Collectors.toSet());
@@ -267,6 +280,6 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
     }
 
     private static boolean isEmpty(String str) {
-        return str == null || str.length() == 0;
+        return str == null || str.isEmpty();
     }
 }

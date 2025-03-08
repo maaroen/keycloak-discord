@@ -143,6 +143,9 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
         if (!List.class.isAssignableFrom(roles.getClass())) {
             newList.add(roles.toString());
         }
+        else {
+            newList = roles;
+        }
         return newList;
     }
 

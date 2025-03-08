@@ -3,6 +3,14 @@
 
 ### Features
 
+* discord role sync ([9f6c287](https://github.com/maaroen/keycloak-discord/commit/9f6c28757819d97f45f758177b934275c7c613bd))
+* discord role sync ([e98c2e5](https://github.com/maaroen/keycloak-discord/commit/e98c2e52aaf72afe1e8d5751f94dea824c8b85cb))
+
+# [0.7.0](https://github.com/maaroen/keycloak-discord/compare/v0.6.1...v0.7.0) (2025-03-08)
+
+
+### Features
+
 * discord role sync ([e98c2e5](https://github.com/maaroen/keycloak-discord/commit/e98c2e52aaf72afe1e8d5751f94dea824c8b85cb))
 
 # 1.0.0 (2025-03-08)

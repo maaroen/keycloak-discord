@@ -144,7 +144,7 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
             newList.add(roles.toString());
         }
         else {
-            newList = roles;
+            newList = (List<String>)roles;
         }
         return newList;
     }

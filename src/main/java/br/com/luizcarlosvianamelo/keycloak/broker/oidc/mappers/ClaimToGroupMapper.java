@@ -136,14 +136,18 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
     public static List<String> getClaimValue(BrokeredIdentityContext context, String claim) {
         JsonNode profileJsonNode = (JsonNode) context.getContextData().get(OIDCIdentityProvider.USER_INFO);
         var roles = AbstractJsonUserAttributeMapper.getJsonValue(profileJsonNode, claim);
-        if(roles == null)
+        if(roles == null) {
+            logger.debugf("MAAROENTEST: Result was null");
             return new ArrayList<>();
+        }
         // convert to string list if not list
         List<String> newList = new ArrayList<>();
         if (!List.class.isAssignableFrom(roles.getClass())) {
+            logger.debugf("MAAROENTEST: Result was single item");
             newList.add(roles.toString());
         }
         else {
+            logger.debugf("MAAROENTEST: Result was list");
             newList = (List<String>)roles;
         }
         return newList;
@@ -162,9 +166,11 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
 
         // get new groups
         List<String> newGroupsList = getClaimValue(context, groupClaimName);
+        logger.debugf("MAAROENTEST: Amount of newGroups: [%s]", newGroupsList.size());
         boolean clearRolesIfNone = Boolean.parseBoolean(mapperModel.getConfig().get(CLEAR_ROLES_IF_NONE));
-        // don't modify groups membership if the claim was not found
-        if (newGroupsList.isEmpty()  && !clearRolesIfNone) {
+        // Clear roles if config option enabled
+        if (newGroupsList.isEmpty() && !clearRolesIfNone) {
+            logger.debugf("MAAROENTEST: Skipped import ");
             logger.debugf("Realm [%s], IdP [%s]: no group claim (claim name: [%s]) for user [%s], ignoring...",
                     realm.getName(),
                     mapperModel.getIdentityProviderAlias(),
@@ -283,6 +289,6 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
     }
 
     private static boolean isEmpty(String str) {
-        return str == null || str.isEmpty();
+        return str == null || str.length() == 0;;
     }
 }

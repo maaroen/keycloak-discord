@@ -5,6 +5,13 @@
 
 * update to keycloak 26.2.5 ([9f0673a](https://github.com/maaroen/keycloak-discord/commit/9f0673a5de15ad7e2a813a99aba9ed21cec0c596))
 
+# [0.8.0](https://github.com/maaroen/keycloak-discord/compare/v0.7.0...v0.8.0) (2025-07-02)
+
+
+### Features
+
+* update to keycloak 26.2.5 ([9f0673a](https://github.com/maaroen/keycloak-discord/commit/9f0673a5de15ad7e2a813a99aba9ed21cec0c596))
+
 # [0.7.0](https://github.com/maaroen/keycloak-discord/compare/v0.6.1...v0.7.0) (2025-03-08)
 
 ### Features
